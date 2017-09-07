@@ -16,7 +16,7 @@ int Sudoku_f[9][9];
 int flag = 0;																//作为回溯的标志
 int S[9];															
 
-int check_row(int x, int y) {											//行检查
+int check_row(int x, int y) {												//行检查
 	int j = 0;
 	while (j < 9) {
 		if (Sudoku[x][y] == Sudoku[x][j] && j != y) return 1;
@@ -25,7 +25,7 @@ int check_row(int x, int y) {											//行检查
 	return 0;
 }
 
-int check_line(int x, int y) {											//列检查
+int check_line(int x, int y) {												//列检查
 	int i = 0;
 	while (i < 9) {
 		if (Sudoku[x][y] == Sudoku[i][y] && i != x) return 1;
@@ -45,16 +45,17 @@ void Sdk() {																//当只剩下数字9没填时，直接把剩下的0
 	}
 }
 
-void creat_Sudoku(int i, int j) {											//建立数独、这里的i和j分别是要填的数和所填的块的编号
-	int x, y, l_flag, r_flag, t = 0;
+void creat_Sudoku(int num, int number) {									//建立数独、这里的num和number分别是要填的数和所填的块的编号
+	int x, y, l_flag, r_flag;											//x和y存随机的位置,l_flag和r_flag是判断当前的位置是否符合数独规则
+	int	t = 0;																//记录重新随机的次数
 	int last1 = -1, last2 = -1;												//上次的x和y的值用last1和last2来保存
-	if (i == 9) {															//只剩9没填时
+	if (num == 9) {															//只剩9没填时
 		Sdk();
 	}
 	else {
 		while (true) {
-			x = rand() % 3 + 3 * (j / 3);									//跟据块的编号，随机生成位置(x,y)
-			y = rand() % 3 + 3 * (j % 3);
+			x = rand() % 3 + 3 * (number / 3);								//跟据块的编号，随机生成位置(x,y)
+			y = rand() % 3 + 3 * (number % 3);
 			if (Sudoku[x][y] != 0) {										//当生成的位置有数时,重新随机,重新随机次数过多时,回溯
 				t++;
 				if (t == 8) {
@@ -76,7 +77,7 @@ void creat_Sudoku(int i, int j) {											//建立数独、这里的i和j分�
 				}
 				last1 = x;
 				last2 = y;
-				Sudoku[x][y] = i;
+				Sudoku[x][y] = num;
 				r_flag = check_row(x, y);
 				l_flag = check_line(x, y);
 				if (r_flag == 1 || l_flag == 1) {
@@ -90,8 +91,8 @@ void creat_Sudoku(int i, int j) {											//建立数独、这里的i和j分�
 					}
 				}
 				if (r_flag == 0 && l_flag == 0) {
-					if (j != 8) {
-						creat_Sudoku(i, j + 1);											//填入的这个数满足数独条件，到下一个数
+					if (number != 8) {
+						creat_Sudoku(num, number + 1);											//填入的这个数满足数独条件，到下一个数
 						if (flag == 2) {
 							Sudoku[x][y] = 0;
 							flag = 0;
@@ -100,7 +101,7 @@ void creat_Sudoku(int i, int j) {											//建立数独、这里的i和j分�
 						else break;
 					}
 					else {
-						creat_Sudoku(i + 1, 0);
+						creat_Sudoku(num + 1, 0);											//填入的这个数满足数独条件，到下一个数
 						if (flag == 2) {
 							Sudoku[x][y] = 0;
 							flag = 0;
@@ -148,19 +149,20 @@ void change_Sudoku() {														//通过一组随机数去转换数独保证
 int main(int agrc, char* agrv[])
 {
 	ofstream outfile;
-	int i, c, j, k;
-	c=atoi(agrv[2]);
-	if (c == 0) {
+	int i, j, k;												
+	int num;																//记录所需要产生数独的数目
+	num=atoi(agrv[2]);
+	if (num == 0) {
 		printf("Please enter a number greater than 1!\n");
 	}
 	else {
 		srand((int)time(0));
 		outfile.open("../BIN/sudoku.txt");	
-		for (i = 0; i < c; i++) {
+		for (i = 0; i < num; i++) {
 			creat_Sudoku(1, 0);
 			creat_random();
 			change_Sudoku();
-			for (j = 0; j < 9; j++) {
+			for (j = 0; j < 9; j++) {										//输出数独
 				for (k = 0; k < 9; k++) {
 					outfile << Sudoku_f[j][k] << " ";
 				}
