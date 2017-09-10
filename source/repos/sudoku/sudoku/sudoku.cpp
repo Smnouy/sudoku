@@ -150,25 +150,32 @@ int main(int agrc, char* agrv[])
 {
 	ofstream outfile;
 	int i, j, k;												
-	int num;																//记录所需要产生数独的数目
-	num=atoi(agrv[2]);
-	if (num == 0) {
-		printf("Please enter a number greater than 1!\n");
+	int num;																	//记录所需要产生数独的数目
+	if (agrc != 3) {
+		printf("Usage: sudoku.exe -c [N:a number]\n");
+		return 0;
 	}
-	else {
-		srand((int)time(0));
-		outfile.open("../BIN/sudoku.txt");	
-		for (i = 0; i < num; i++) {
-			creat_Sudoku(1, 0);
-			creat_random();
-			change_Sudoku();
-			for (j = 0; j < 9; j++) {										//输出数独
-				for (k = 0; k < 9; k++) {
-					outfile << Sudoku_f[j][k] << " ";
+	if (agrc == 3){
+		num=atoi(agrv[2]);
+		if (num == 0) {
+			printf("Please enter a number greater than 1!\n");
+			return 0;
+		}
+		else {
+			srand((int)time(0));
+			outfile.open("../BIN/sudoku.txt");
+			for (i = 0; i < num; i++) {
+				creat_Sudoku(1, 0);
+				creat_random();
+				change_Sudoku();
+				for (j = 0; j < 9; j++) {										//输出数独
+					for (k = 0; k < 9; k++) {
+						outfile << Sudoku_f[j][k] << " ";
+					}
+					outfile << endl;
 				}
 				outfile << endl;
 			}
-			outfile << endl;
 		}
 	}
 	outfile.close();
