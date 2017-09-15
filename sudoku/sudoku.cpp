@@ -1,22 +1,23 @@
-// Sudoku.cpp: å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
+// sudoku.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+//
+// Sudoku.cpp: ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
 //
 
 #include "stdafx.h"
-#include <time.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <ctime>
+#include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
-
 using namespace std;
 
-
-int Sudoku[9][9] = { 0 };													//ç”¨äºŒç»´æ•°ç»„å­˜æ•°ç‹¬
+int Sudoku[9][9] = { 0 };													//ÓÃ¶şÎ¬Êı×é´æÊı¶À
 int Sudoku_f[9][9];
-int flag = 0;																//ä½œä¸ºå›æº¯çš„æ ‡å¿—
-int S[9];															
+int flag = 0;																//×÷Îª»ØËİµÄ±êÖ¾
+int S[9];
+int check[1000000];
 
-int check_row(int x, int y) {												//è¡Œæ£€æŸ¥
+int check_row(int x, int y) {												//ĞĞ¼ì²é
 	int j = 0;
 	while (j < 9) {
 		if (Sudoku[x][y] == Sudoku[x][j] && j != y) return 1;
@@ -25,7 +26,7 @@ int check_row(int x, int y) {												//è¡Œæ£€æŸ¥
 	return 0;
 }
 
-int check_line(int x, int y) {												//åˆ—æ£€æŸ¥
+int check_line(int x, int y) {												//ÁĞ¼ì²é
 	int i = 0;
 	while (i < 9) {
 		if (Sudoku[x][y] == Sudoku[i][y] && i != x) return 1;
@@ -34,7 +35,7 @@ int check_line(int x, int y) {												//åˆ—æ£€æŸ¥
 	return 0;
 }
 
-void Sdk() {																//å½“åªå‰©ä¸‹æ•°å­—9æ²¡å¡«æ—¶ï¼Œç›´æ¥æŠŠå‰©ä¸‹çš„0å˜æˆ9
+void Sdk() {																//µ±Ö»Ê£ÏÂÊı×Ö9Ã»ÌîÊ±£¬Ö±½Ó°ÑÊ£ÏÂµÄ0±ä³É9
 	int i, j;
 	for (i = 0; i < 9; i++) {
 		for (j = 0; j < 9; j++) {
@@ -45,18 +46,18 @@ void Sdk() {																//å½“åªå‰©ä¸‹æ•°å­—9æ²¡å¡«æ—¶ï¼Œç›´æ¥æŠŠå‰©ä¸‹çš„0
 	}
 }
 
-void creat_Sudoku(int num, int number) {									//å»ºç«‹æ•°ç‹¬ã€è¿™é‡Œçš„numå’Œnumberåˆ†åˆ«æ˜¯è¦å¡«çš„æ•°å’Œæ‰€å¡«çš„å—çš„ç¼–å·
-	int x, y, l_flag, r_flag;											//xå’Œyå­˜éšæœºçš„ä½ç½®,l_flagå’Œr_flagæ˜¯åˆ¤æ–­å½“å‰çš„ä½ç½®æ˜¯å¦ç¬¦åˆæ•°ç‹¬è§„åˆ™
-	int	t = 0;																//è®°å½•é‡æ–°éšæœºçš„æ¬¡æ•°
-	int last1 = -1, last2 = -1;												//ä¸Šæ¬¡çš„xå’Œyçš„å€¼ç”¨last1å’Œlast2æ¥ä¿å­˜
-	if (num == 9) {															//åªå‰©9æ²¡å¡«æ—¶
+void creat_Sudoku(int num, int number) {									//½¨Á¢Êı¶À¡¢ÕâÀïµÄnumºÍnumber·Ö±ğÊÇÒªÌîµÄÊıºÍËùÌîµÄ¿éµÄ±àºÅ
+	int x, y, l_flag, r_flag;												//xºÍy´æËæ»úµÄÎ»ÖÃ,l_flagºÍr_flagÊÇÅĞ¶Ïµ±Ç°µÄÎ»ÖÃÊÇ·ñ·ûºÏÊı¶À¹æÔò
+	int	t = 0;																//¼ÇÂ¼ÖØĞÂËæ»úµÄ´ÎÊı
+	int last1 = -1, last2 = -1;												//ÉÏ´ÎµÄxºÍyµÄÖµÓÃlast1ºÍlast2À´±£´æ
+	if (num == 9) {															//Ö»Ê£9Ã»ÌîÊ±
 		Sdk();
 	}
 	else {
 		while (true) {
-			x = rand() % 3 + 3 * (number / 3);								//è·Ÿæ®å—çš„ç¼–å·ï¼Œéšæœºç”Ÿæˆä½ç½®(x,y)
+			x = rand() % 3 + 3 * (number / 3);								//¸ú¾İ¿éµÄ±àºÅ£¬Ëæ»úÉú³ÉÎ»ÖÃ(x,y)
 			y = rand() % 3 + 3 * (number % 3);
-			if (Sudoku[x][y] != 0) {										//å½“ç”Ÿæˆçš„ä½ç½®æœ‰æ•°æ—¶,é‡æ–°éšæœº,é‡æ–°éšæœºæ¬¡æ•°è¿‡å¤šæ—¶,å›æº¯
+			if (Sudoku[x][y] != 0) {										//µ±Éú³ÉµÄÎ»ÖÃÓĞÊıÊ±,ÖØĞÂËæ»ú,ÖØĞÂËæ»ú´ÎÊı¹ı¶àÊ±,»ØËİ
 				t++;
 				if (t == 8) {
 					flag = 2;
@@ -66,7 +67,7 @@ void creat_Sudoku(int num, int number) {									//å»ºç«‹æ•°ç‹¬ã€è¿™é‡Œçš„numå’
 				continue;
 			}
 			if (Sudoku[x][y] == 0) {
-				if (last1 == x&&last2 == y) {								//å½“ç”Ÿæˆçš„ä½ç½®æ²¡æ•°,ä½†ä¸€ç›´æ˜¯è¿™ä¸ªä½ç½®,å›æº¯
+				if (last1 == x&&last2 == y) {								//µ±Éú³ÉµÄÎ»ÖÃÃ»Êı,µ«Ò»Ö±ÊÇÕâ¸öÎ»ÖÃ,»ØËİ
 					t++;
 					if (t == 8) {
 						flag = 2;
@@ -92,7 +93,7 @@ void creat_Sudoku(int num, int number) {									//å»ºç«‹æ•°ç‹¬ã€è¿™é‡Œçš„numå’
 				}
 				if (r_flag == 0 && l_flag == 0) {
 					if (number != 8) {
-						creat_Sudoku(num, number + 1);											//å¡«å…¥çš„è¿™ä¸ªæ•°æ»¡è¶³æ•°ç‹¬æ¡ä»¶ï¼Œåˆ°ä¸‹ä¸€ä¸ªæ•°
+						creat_Sudoku(num, number + 1);											//ÌîÈëµÄÕâ¸öÊıÂú×ãÊı¶ÀÌõ¼ş£¬µ½ÏÂÒ»¸öÊı
 						if (flag == 2) {
 							Sudoku[x][y] = 0;
 							flag = 0;
@@ -101,7 +102,7 @@ void creat_Sudoku(int num, int number) {									//å»ºç«‹æ•°ç‹¬ã€è¿™é‡Œçš„numå’
 						else break;
 					}
 					else {
-						creat_Sudoku(num + 1, 0);											//å¡«å…¥çš„è¿™ä¸ªæ•°æ»¡è¶³æ•°ç‹¬æ¡ä»¶ï¼Œåˆ°ä¸‹ä¸€ä¸ªæ•°
+						creat_Sudoku(num + 1, 0);											//ÌîÈëµÄÕâ¸öÊıÂú×ãÊı¶ÀÌõ¼ş£¬µ½ÏÂÒ»¸öÊı
 						if (flag == 2) {
 							Sudoku[x][y] = 0;
 							flag = 0;
@@ -115,7 +116,7 @@ void creat_Sudoku(int num, int number) {									//å»ºç«‹æ•°ç‹¬ã€è¿™é‡Œçš„numå’
 	}
 }
 
-void creat_random() {														//äº§ç”Ÿä¸€ç»„éšæœºæ•°
+void creat_random() {														//²úÉúÒ»×éËæ»úÊı
 	int i, j;
 	S[5] = Sudoku[0][0];
 	for (i = 1; i < 10; i++) {
@@ -132,7 +133,7 @@ void creat_random() {														//äº§ç”Ÿä¸€ç»„éšæœºæ•°
 	}
 }
 
-void change_Sudoku() {														//é€šè¿‡ä¸€ç»„éšæœºæ•°å»è½¬æ¢æ•°ç‹¬ä¿è¯æ»¡è¶³æ¡ä»¶
+void change_Sudoku() {														//Í¨¹ıÒ»×éËæ»úÊıÈ¥×ª»»Êı¶À±£Ö¤Âú×ãÌõ¼ş
 	int i, j, k;
 	for (i = 0; i < 9; i++) {
 		for (j = 0; j < 9; j++) {
@@ -146,33 +147,47 @@ void change_Sudoku() {														//é€šè¿‡ä¸€ç»„éšæœºæ•°å»è½¬æ¢æ•°ç‹¬ä¿è¯
 	}
 }
 
+bool check_sudoku(int i) {
+	check[i] = (59 * Sudoku_f[0][1]) + (69 * Sudoku_f[0][2]) + (3 * Sudoku_f[0][3]) + (32 * Sudoku_f[0][4]) + (25 * Sudoku_f[0][5]) + (43 * Sudoku_f[0][6]) + (51 * Sudoku_f[0][7]) + (71 * Sudoku_f[0][8]);
+	for (int j = 0; j < i; j++) {
+		if (check[j] == check[i]) return false;
+	}
+	return true;
+}
+
 int main(int agrc, char* agrv[])
 {
 	ofstream outfile;
-	int i, j, k;												
-	int num;																	//è®°å½•æ‰€éœ€è¦äº§ç”Ÿæ•°ç‹¬çš„æ•°ç›®
+	int num;
+	outfile.open("sudoku.txt");																	//¼ÇÂ¼ËùĞèÒª²úÉúÊı¶ÀµÄÊıÄ¿
 	if (agrc != 3) {
 		printf("Usage: sudoku.exe -c [N:a number]\n");
 		return 0;
 	}
-	if (agrc == 3){
-		num=atoi(agrv[2]);
+	if (agrc == 3) {
+		num = atoi(agrv[2]);
 		if (num == 0) {
 			printf("Please enter a number greater than 1!\n");
 			return 0;
 		}
 		else {
-			srand((int)time(0));
-			outfile.open("../BIN/sudoku.txt");
-			for (i = 0; i < num; i++) {
+			srand((unsigned)time(NULL));
+			for (int i = 0; i < num; i++) {
 				creat_Sudoku(1, 0);
 				creat_random();
 				change_Sudoku();
-				for (j = 0; j < 9; j++) {										//è¾“å‡ºæ•°ç‹¬
-					for (k = 0; k < 9; k++) {
-						outfile << Sudoku_f[j][k] << " ";
+				//output();
+				if (check_sudoku(i) == false) {
+					i--;
+					continue;
+				}
+				else {
+					for (int j = 0; j < 9; j++) {										//Êä³öÊı¶À
+						for (int k = 0; k < 9; k++) {
+							outfile << Sudoku_f[j][k] << " ";
+						}
+						outfile << endl;
 					}
-					outfile << endl;
 				}
 				outfile << endl;
 			}
