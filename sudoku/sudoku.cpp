@@ -11,8 +11,9 @@
 #include <fstream>
 using namespace std;
 
+int Sudoku_number = 0;
 int Sudoku[9][9] = { 0 };													//用二维数组存数独
-int Sudoku_f[9][9];
+int Sudoku_f[1000000][9][9];
 int flag = 0;																//作为回溯的标志
 int S[9];
 int check[1000000];
@@ -139,7 +140,7 @@ void change_Sudoku() {														//通过一组随机数去转换数独保证满足条件
 		for (j = 0; j < 9; j++) {
 			for (k = 1; k < 10; k++) {
 				if (S[k] == Sudoku[i][j]) {
-					Sudoku_f[i][j] = k;
+					Sudoku_f[Sudoku_number][i][j] = k;
 					break;
 				}
 			}
@@ -148,7 +149,7 @@ void change_Sudoku() {														//通过一组随机数去转换数独保证满足条件
 }
 
 bool check_sudoku(int i) {
-	check[i] = (59 * Sudoku_f[0][1]) + (69 * Sudoku_f[0][2]) + (3 * Sudoku_f[0][3]) + (32 * Sudoku_f[0][4]) + (25 * Sudoku_f[0][5]) + (43 * Sudoku_f[0][6]) + (51 * Sudoku_f[0][7]) + (71 * Sudoku_f[0][8]);
+	check[i] = (59 * Sudoku_f[Sudoku_number][0][1]) + (69 * Sudoku_f[Sudoku_number][0][2]) + (3 * Sudoku_f[Sudoku_number][0][3]) + (32 * Sudoku_f[Sudoku_number][0][4]) + (25 * Sudoku_f[Sudoku_number][0][5]) + (43 * Sudoku_f[Sudoku_number][0][6]) + (51 * Sudoku_f[Sudoku_number][0][7]) + (71 * Sudoku_f[Sudoku_number][0][8]);
 	for (int j = 0; j < i; j++) {
 		if (check[j] == check[i]) return false;
 	}
@@ -181,15 +182,15 @@ int main(int agrc, char* agrv[])
 					i--;
 					continue;
 				}
-				else {
+				for (int f = 0; f < Sudoku_number; f++) {
 					for (int j = 0; j < 9; j++) {										//输出数独
 						for (int k = 0; k < 9; k++) {
-							outfile << Sudoku_f[j][k] << " ";
+							outfile << Sudoku_f[f][j][k] << " ";
 						}
 						outfile << endl;
 					}
+					outfile << endl;
 				}
-				outfile << endl;
 			}
 		}
 	}

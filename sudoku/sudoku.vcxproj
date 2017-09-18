@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{43B50399-A9D1-47DF-AAE8-B020B99F3DF4}</ProjectGuid>
+    <ProjectGuid>{C8282397-A535-43C1-B90C-C1AEF68CBEF5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>sudoku</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
